@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -30,7 +30,7 @@ export function ItemForm({ item, currentUser, users, onSaved, onClose }: Props) 
   const [serverError, setServerError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const submit = async (event: FormEvent) => {
+  const submit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     // Same schema as the server, so the form and the API cannot disagree on what is valid.
     const parsed = ContentItemInput.safeParse({ title, type, status, authors, deadline });
