@@ -16,5 +16,18 @@ services:
       timeout: 3s
       retries: 20
 
+  # The dev servers in one container: enough for a reviewer to run the case, not a production image.
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgres://tracker:tracker@db:5432/tracker
+      VITE_HOST: all
+    ports:
+      - "${WEB_PORT:-5173}:5173"
+      - "${API_PORT:-3001}:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   dbdata:
