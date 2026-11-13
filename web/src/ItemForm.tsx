@@ -8,11 +8,17 @@ import DialogTitle from "@mui/material/DialogTitle";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
-import { ContentItemInput, ContentStatus, ContentType, type ContentItem, type User } from "@tracker/shared";
+import {
+  ContentItemInput,
+  ContentStatus,
+  ContentType,
+  type ContentItem,
+  type User,
+} from "@tracker/shared";
 import { api } from "./api";
 
 interface Props {
-  // An item means edit; no item means create.
+  // an item means edit and no item means create.
   item?: ContentItem;
   currentUser: User;
   users: User[];
@@ -20,40 +26,67 @@ interface Props {
   onClose: () => void;
 }
 
-export function ItemForm({ item, currentUser, users, onSaved, onClose }: Props) {
+export function ItemForm({
+  item,
+  currentUser,
+  users,
+  onSaved,
+  onClose,
+}: Props) {
   const [title, setTitle] = useState(item?.title ?? "");
   const [type, setType] = useState<string>(item?.type ?? "Article");
   const [status, setStatus] = useState<string>(item?.status ?? "Idea");
-  const [authors, setAuthors] = useState<string[]>(item?.authors ?? [currentUser.userName]);
+  const [authors, setAuthors] = useState<string[]>(
+    item?.authors ?? [currentUser.userName],
+  );
   const [deadline, setDeadline] = useState(item?.deadline ?? "");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const submit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     // Same schema as the server, so the form and the API cannot disagree on what is valid.
-    const parsed = ContentItemInput.safeParse({ title, type, status, authors, deadline });
+    const parsed = ContentItemInput.safeParse({
+      title,
+      type,
+      status,
+      authors,
+      deadline,
+    });
+
     if (!parsed.success) {
-      setErrors(Object.fromEntries(parsed.error.issues.map((i) => [String(i.path[0]), i.message])));
+      setErrors(
+        Object.fromEntries(
+          parsed.error.issues.map((i) => [String(i.path[0]), i.message]),
+        ),
+      );
       return;
     }
+
     setErrors({});
     setServerError(null);
-    setBusy(true);
+    setLoading(true);
+    
     try {
-      onSaved(item ? await api.updateItem(item.id, parsed.data) : await api.createItem(parsed.data));
+      onSaved(
+        item
+          ? await api.updateItem(item.id, parsed.data)
+          : await api.createItem(parsed.data),
+      );
     } catch (err) {
       setServerError(err instanceof Error ? err.message : "Could not save");
     } finally {
-      setBusy(false);
+      setLoading(false);
     }
   };
 
   return (
     <Dialog open onClose={onClose} fullWidth maxWidth="sm">
       <form onSubmit={submit} noValidate>
-        <DialogTitle>{item ? "Edit content item" : "New content item"}</DialogTitle>
+        <DialogTitle>
+          {item ? "Edit content item" : "New content item"}
+        </DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             {serverError && <Alert severity="error">{serverError}</Alert>}
@@ -124,7 +157,7 @@ export function ItemForm({ item, currentUser, users, onSaved, onClose }: Props) 
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained" disabled={busy}>
+          <Button type="submit" variant="contained" disabled={loading}>
             Save
           </Button>
         </DialogActions>

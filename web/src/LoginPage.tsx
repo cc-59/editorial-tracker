@@ -12,18 +12,18 @@ export function LoginPage({ onLogin }: { onLogin: (user: User) => void }) {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const submit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setBusy(true);
+    setLoading(true);
     setError(null);
     try {
       onLogin(await login(userName.trim(), password));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
-      setBusy(false);
+      setLoading(false);
     }
   };
 
@@ -48,7 +48,7 @@ export function LoginPage({ onLogin }: { onLogin: (user: User) => void }) {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <Button type="submit" variant="contained" disabled={busy}>
+        <Button type="submit" variant="contained" disabled={loading}>
           Log in
         </Button>
         <Typography variant="body2" color="text.secondary">

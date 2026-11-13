@@ -21,20 +21,20 @@ interface Props {
 
 export function ItemView({ item, users, onChanged, onEdit, onClose }: Props) {
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(false);
   const archived = item.archivedAt !== null;
 
   const nameOf = (userName: string) => users.find((u) => u.userName === userName)?.displayName ?? userName;
 
   const run = async (action: () => Promise<ContentItem>) => {
-    setBusy(true);
+    setLoading(true);
     setError(null);
     try {
       onChanged(await action());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Action failed");
     } finally {
-      setBusy(false);
+      setLoading(false);
     }
   };
 
@@ -56,19 +56,19 @@ export function ItemView({ item, users, onChanged, onEdit, onClose }: Props) {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
-        <Button onClick={onEdit} disabled={busy}>
+        <Button onClick={onEdit} disabled={loading}>
           Edit
         </Button>
         <Button
           onClick={() => run(() => (archived ? api.unarchive(item.id) : api.archive(item.id)))}
-          disabled={busy}
+          disabled={loading}
         >
           {archived ? "Unarchive" : "Archive"}
         </Button>
         <Button
           variant="contained"
           onClick={() => run(() => api.setStatus(item.id, "Published"))}
-          disabled={busy || item.status === "Published"}
+          disabled={loading || item.status === "Published"}
         >
           Publish
         </Button>
