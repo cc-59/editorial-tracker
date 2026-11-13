@@ -1,6 +1,6 @@
 import type { User } from "@tracker/shared";
 
-// Mock authentication, as the case allows: fixed users and one shared demo password.
+// Users and one demo password are hardcoded because the case allows mock authentication.
 export const DEMO_PASSWORD = "frihed123";
 
 export const users: User[] = [

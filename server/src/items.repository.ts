@@ -1,8 +1,8 @@
 import type { ContentItem, ContentItemInput, ContentStatus } from "@tracker/shared";
 import { pool } from "./db";
 
-// deadline is cast to text: the driver turns a DATE into a JS Date at local midnight,
-// and the day can shift when that is converted to UTC.
+// deadline is cast to text because the driver turns a DATE into a JS Date at local midnight,
+// and converting that to UTC can shift the day.
 const COLUMNS = `
   id, title, status, type, authors,
   deadline::text AS deadline,

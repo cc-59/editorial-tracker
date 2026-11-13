@@ -18,7 +18,6 @@ import {
 import { api } from "./api";
 
 interface Props {
-  // an item means edit and no item means create.
   item?: ContentItem;
   currentUser: User;
   users: User[];
@@ -46,7 +45,7 @@ export function ItemForm({
 
   const submit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Same schema as the server, so the form and the API cannot disagree on what is valid.
+    // Same schema as the server because the form and the API must agree on what is valid.
     const parsed = ContentItemInput.safeParse({
       title,
       type,

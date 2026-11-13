@@ -6,7 +6,7 @@ import { LoginPage } from "./LoginPage";
 
 export function App() {
   const [user, setUser] = useState<User | null>(null);
-  // A stored token must be checked with the server before the dashboard shows.
+  // Starts as checking because the server must confirm a stored token first.
   const [checking, setChecking] = useState(getToken() !== null);
 
   useEffect(() => {

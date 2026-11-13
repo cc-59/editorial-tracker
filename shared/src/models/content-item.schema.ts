@@ -16,18 +16,17 @@ export const ContentItem = z.object({
   title: z.string().trim().min(1),
   status: ContentStatus,
   type: ContentType,
-  // every item needs at least one owner
+  // At least one author because every item needs an owner.
   authors: z.array(z.string()).min(1),
-  // ISO text: JSON has no date type.
+  // Text because JSON has no date type.
   deadline: z.iso.date(),
   createdBy: z.string(),
   createdAt: z.iso.datetime(),
-  // null means not archived
   archivedAt: z.iso.datetime().nullable(),
 });
 export type ContentItem = z.infer<typeof ContentItem>;
 
-// The server sets id, createdBy, createdAt and archivedAt
+// id, createdBy, createdAt and archivedAt are left out because the server sets them.
 export const ContentItemInput = ContentItem.pick({
   title: true,
   type: true,

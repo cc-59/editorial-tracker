@@ -1,4 +1,4 @@
--- Runs once, when the database volume is empty.
+-- Runs once because Postgres only executes init scripts on an empty volume.
 CREATE TYPE content_status AS ENUM ('Idea', 'Draft', 'Review', 'Published');
 CREATE TYPE content_type AS ENUM ('Article', 'Video', 'Podcast', 'Newsletter');
 
@@ -7,12 +7,12 @@ CREATE TABLE content_item (
   title       text NOT NULL CHECK (length(trim(title)) > 0),
   status      content_status NOT NULL DEFAULT 'Idea',
   type        content_type NOT NULL,
-  -- Usernames. Users are hardcoded in the server, so there is no user table to reference.
+  -- Usernames with no foreign key because users are hardcoded in the server.
   authors     text[] NOT NULL CHECK (cardinality(authors) > 0),
   deadline    date NOT NULL,
   created_by  text NOT NULL,
   created_at  timestamptz NOT NULL DEFAULT now(),
-  -- NULL means not archived. One column, so "archived" and "when" cannot disagree.
+  -- One nullable column because "archived" and "when" must not disagree.
   archived_at timestamptz
 );
 

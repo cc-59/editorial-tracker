@@ -27,7 +27,6 @@ app.get("/api/me", requireUser, (_req, res) => {
   res.json(currentUser(res));
 });
 
-// For the author picker.
 app.get("/api/users", requireUser, (_req, res) => {
   res.json(users);
 });

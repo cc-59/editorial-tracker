@@ -8,8 +8,8 @@ import { canUserSeeItem } from "./visibility";
 
 export const itemsRouter = Router();
 
-// Every route that touches one item goes through here, so the role rule cannot be skipped.
-// An item the user may not see answers 404, like a missing one: a 403 would confirm it exists.
+// Every single-item route loads through here because the role rule must not be skipped.
+// A hidden item answers 404 because a 403 would confirm that it exists.
 async function loadVisibleItem(id: string | undefined, res: Response): Promise<ContentItem | undefined> {
   const parsedId = z.uuid().safeParse(id);
   const item = parsedId.success ? await repo.findItem(parsedId.data) : undefined;
@@ -32,7 +32,7 @@ function rejectUnknownAuthors(authors: string[], res: Response): boolean {
 itemsRouter.get("/", async (req, res) => {
   const includeArchived = req.query.archived === "true";
   const user = currentUser(res);
-  // The rule runs in code, not in SQL, so it has exactly one implementation.
+  // The rule filters in code because it should have one implementation.
   // With many rows it would move into the WHERE clause.
   const items = (await repo.listItems())
     .filter((item) => canUserSeeItem(user, item))

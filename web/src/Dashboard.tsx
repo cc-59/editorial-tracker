@@ -89,7 +89,7 @@ export function Dashboard({ user, onLogout }: Props) {
   ];
 
   const afterChange = (changed: ContentItem) => {
-    // Reload instead of patching the list: an archived item may have to leave the view.
+    // Reload because an archived item may have to leave the view.
     void reload();
     setOpenId(changed.id);
     setFormMode("closed");

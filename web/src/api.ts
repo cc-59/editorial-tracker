@@ -2,7 +2,7 @@ import type { ContentItem, ContentItemInput, ContentStatus, User } from "@tracke
 
 const TOKEN_KEY = "tracker.token";
 
-// sessionStorage: the login ends when the tab closes, and other tabs do not share it.
+// sessionStorage because the login should end when the tab closes.
 export const getToken = (): string | null => sessionStorage.getItem(TOKEN_KEY);
 export const clearToken = (): void => sessionStorage.removeItem(TOKEN_KEY);
 

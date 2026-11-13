@@ -16,7 +16,7 @@ services:
       timeout: 3s
       retries: 20
 
-  # The dev servers in one container: enough for a reviewer to run the case, not a production image.
+  # Runs the dev servers because this image is for reviewing the case, not for production.
   app:
     build: .
     environment:
