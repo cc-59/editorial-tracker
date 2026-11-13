@@ -49,7 +49,7 @@ export function Dashboard({ user, onLogout }: Props) {
     api.users().then(setUsers).catch(() => setUsers([]));
   }, []);
 
-  const nameOf = (userName: string) => users.find((u) => u.userName === userName)?.displayName ?? userName;
+  const displayNameOf = (userName: string) => users.find((u) => u.userName === userName)?.displayName ?? userName;
   const today = new Date().toLocaleDateString("sv-SE");
   const openItem = items.find((item) => item.id === openId);
   const rows = statusFilter === "All" ? items : items.filter((item) => item.status === statusFilter);
@@ -63,13 +63,13 @@ export function Dashboard({ user, onLogout }: Props) {
       headerName: "Authors",
       flex: 1,
       minWidth: 160,
-      valueGetter: (_value, row) => row.authors.map(nameOf).join(", "),
+      valueGetter: (_value, row) => row.authors.map(displayNameOf).join(", "),
     },
     {
       field: "createdBy",
       headerName: "Created by",
       width: 140,
-      valueGetter: (_value, row) => nameOf(row.createdBy),
+      valueGetter: (_value, row) => displayNameOf(row.createdBy),
     },
     {
       field: "deadline",

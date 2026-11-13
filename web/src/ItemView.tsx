@@ -24,9 +24,9 @@ export function ItemView({ item, users, onChanged, onEdit, onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const archived = item.archivedAt !== null;
 
-  const nameOf = (userName: string) => users.find((u) => u.userName === userName)?.displayName ?? userName;
+  const displayNameOf = (userName: string) => users.find((u) => u.userName === userName)?.displayName ?? userName;
 
-  const run = async (action: () => Promise<ContentItem>) => {
+  const runItemAction = async (action: () => Promise<ContentItem>) => {
     setLoading(true);
     setError(null);
     try {
@@ -49,8 +49,8 @@ export function ItemView({ item, users, onChanged, onEdit, onClose }: Props) {
             <Chip label={item.type} variant="outlined" />
             {archived && <Chip label="Archived" color="warning" />}
           </Stack>
-          <Typography>Authors: {item.authors.map(nameOf).join(", ")}</Typography>
-          <Typography>Created by: {nameOf(item.createdBy)}</Typography>
+          <Typography>Authors: {item.authors.map(displayNameOf).join(", ")}</Typography>
+          <Typography>Created by: {displayNameOf(item.createdBy)}</Typography>
           <Typography>Deadline: {item.deadline}</Typography>
         </Stack>
       </DialogContent>
@@ -60,14 +60,14 @@ export function ItemView({ item, users, onChanged, onEdit, onClose }: Props) {
           Edit
         </Button>
         <Button
-          onClick={() => run(() => (archived ? api.unarchive(item.id) : api.archive(item.id)))}
+          onClick={() => runItemAction(() => (archived ? api.unarchive(item.id) : api.archive(item.id)))}
           disabled={loading}
         >
           {archived ? "Unarchive" : "Archive"}
         </Button>
         <Button
           variant="contained"
-          onClick={() => run(() => api.setStatus(item.id, "Published"))}
+          onClick={() => runItemAction(() => api.setStatus(item.id, "Published"))}
           disabled={loading || item.status === "Published"}
         >
           Publish
