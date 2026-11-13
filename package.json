@@ -1,0 +1,14 @@
+{
+  "name": "editorial-tracker",
+  "private": true,
+  "workspaces": ["shared", "server", "web"],
+  "scripts": {
+    "dev": "concurrently -n server,web \"npm run dev -w server\" \"npm run dev -w web\"",
+    "test": "npm test -w server",
+    "typecheck": "tsc --noEmit -p server && tsc --noEmit -p web/tsconfig.app.json"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "typescript": "^5.9.0"
+  }
+}
