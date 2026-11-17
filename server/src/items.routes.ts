@@ -1,18 +1,28 @@
 import { Router, type Response } from "express";
 import * as z from "zod";
-import { ContentItemInput, StatusChange, type ContentItem } from "@tracker/shared";
+import {
+  ContentItemInput,
+  StatusChange,
+  type ContentItem,
+} from "@tracker/shared";
 import { currentUser } from "./auth";
 import * as repo from "./items.repository";
 import { findUser } from "./users";
 import { canUserSeeItem } from "./visibility";
+import { canSetStatus } from "./permissions";
 
 export const itemsRouter = Router();
 
 // Every single-item route loads through here because the role rule must not be skipped.
 // A hidden item answers 404 because a 403 would confirm that it exists.
-async function loadVisibleItem(id: string | undefined, res: Response): Promise<ContentItem | undefined> {
+async function loadVisibleItem(
+  id: string | undefined,
+  res: Response,
+): Promise<ContentItem | undefined> {
   const parsedId = z.uuid().safeParse(id);
-  const item = parsedId.success ? await repo.findItem(parsedId.data) : undefined;
+  const item = parsedId.success
+    ? await repo.findItem(parsedId.data)
+    : undefined;
   if (!item || !canUserSeeItem(currentUser(res), item)) {
     res.status(404).json({ error: "Item not found" });
     return undefined;
@@ -62,8 +72,14 @@ itemsRouter.put("/:id", async (req, res) => {
 itemsRouter.patch("/:id/status", async (req, res) => {
   const item = await loadVisibleItem(req.params.id, res);
   if (!item) return;
-  const { status } = StatusChange.parse(req.body);
-  res.json(await repo.setStatus(item.id, status));
+  const { status: newStatus } = StatusChange.parse(req.body);
+
+  const user = currentUser(res);
+  if (!canSetStatus(user, newStatus, item.status)) {
+    res.status(403).json({ error: "Only an editor may publish." });
+    return;
+  }
+  res.json(await repo.setStatus(item.id, newStatus));
 });
 
 itemsRouter.post("/:id/archive", async (req, res) => {
